@@ -36,18 +36,7 @@ fn exec(cmd_array: &[String]) {
   match unsafe { fork().expect("failed fork") } {
     ForkResult::Parent { child } => {
       println!("Parent PID: {}, User: {} Child: {}", getpid(), getuid(), child);
-
-      println!("Running [{}]", &cmd);
       waitpid(child, None).expect("failed waitpid");
-
-      let bash = CString::new("bash").expect("CString::new failed");
-      let argv = vec![
-        CString::new("bash").unwrap(),
-        CString::new("-c").unwrap(),
-        CString::new("/proc/self/exe").unwrap(),
-        CString::new(cmd).unwrap(),
-      ];
-      execvp(&bash, &argv).expect("failed execv");
     }
     ForkResult::Child => {
       println!("Child PID: {}, User: {}", getpid(), getuid());
